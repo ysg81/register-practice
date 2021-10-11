@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const auth = require("../middleware/auth")
 
-router.post("/register", async (res, req, next) => {
+router.post("/register", async (req, res, next) => {
 	const { name, email, password } = req.body
 	try {
 		// salt 생성
@@ -26,7 +26,7 @@ router.post("/register", async (res, req, next) => {
 	}
 })
 
-router.post("/login", async (res, req, next) => {
+router.post("/login", async (req, res, next) => {
 	const { name, email, password } = req.body
 
 	// 유저 정보 찾기
@@ -67,13 +67,11 @@ router.post("/login", async (res, req, next) => {
 		.json({ success: true, message: "로그인에 성공하였습니다." })
 })
 
-
-router.get("/auth", auth, async (res, req, next) => {
+router.get("/auth", auth, async (req, res, next) => {
 	res.json({ success: true, message: "인증된 유저입니다." })
 })
 
-
-router.get("/logout", auth, async (res, req, next) => {
+router.get("/logout", auth, async (req, res, next) => {
 	try {
 		await User.findOneAndUpdate({ _id: req.user_id }, { token: "" })
 	} catch (error) {

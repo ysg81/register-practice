@@ -10,9 +10,12 @@ const config = require("./config/key")
 const cookieParser = require("cookie-parser")
 
 const app = express()
-// app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cookieParser())
+
+app.get("/api/test", (rqe, res, next) => {
+	res.send("안녕하세요~~")
+})
 
 app.use("/api", indexRouter)
 app.use("/api/user", userRouter)
