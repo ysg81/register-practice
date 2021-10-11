@@ -1,19 +1,23 @@
 const express = require("express")
-const app = express()
+const bodyParser = require("body-parser")
+const indexRouter = require("./router/index")
 
-app.get("/", (req, res, next) => {
-	res.send("homepage")
-})
+const mongoose = require("mongoose")
+
+const config = require("./config/key")
+
+const app = express()
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+
+app.use("/", indexRouter)
 
 app.listen(5000, () => {
 	console.log("Listening on port 5000...")
 })
 
 mongoose
-	.connect(
-		"mongodb+srv://Yuser:whyky247@cluster0.p9qvo.mongodb.net/register-practice?retryWrites=true&w=majority",
-		{},
-	)
+	.connect(config.mongoURI, {})
 	.then(() => {
 		console.log("Database connected")
 	})
