@@ -3,9 +3,9 @@ const router = express.Router()
 const User = require("../models/User")
 const ExpressError = require("../models/ExpressError")
 
-const cookieParser = require("cookie-parser")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const auth = require("../middleware/auth")
 
 router.post("/register", async (req, res, next) => {
 	const { name, email, password } = req.body
@@ -62,8 +62,26 @@ router.post("/login", async (req, res, next) => {
 	} catch (error) {
 		return next(new ExpressError("토근 생성 및 저장을 실패하였습니다.", 400))
 	}
-	res.cookie("x_auth", token)
-	res.json({ success: true, message: "로그인에 성공하였습니다." })
+	res
+		.cookie("x_auth", token)
+		.json({ success: true, message: "로그인에 성공하였습니다." })
+})
+
+router.get("/auth", async (req, res, next) => {
+	let token = req.cookies.x_auth
+	const { email, password } = jwt.verify(token, "mySecretToken")
+
+	let user
+	try {
+		user = await User.findOne({ email, password, token: token })
+		if (!user) {
+			return next(new ExpressError("해당하는 유저가 존재하지 않습니다.", 500))
+		}
+	} catch (error) {
+		return next(new ExpressError("유저 정보를 찾는데 실패하였습니다.", 500))
+	}
+
+	res.json({ success: true, message: "인증된 유저입니다." })
 })
 
 module.exports = router

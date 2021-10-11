@@ -3,13 +3,16 @@ const bodyParser = require("body-parser")
 const indexRouter = require("./router/index-route")
 const userRouter = require("./router/user-router")
 
-const mongoose = require("mongoose")
+const jwt = require("jsonwebtoken")
 
+const mongoose = require("mongoose")
 const config = require("./config/key")
+const cookieParser = require("cookie-parser")
 
 const app = express()
 // app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 app.use("/api", indexRouter)
 app.use("/api/user", userRouter)
