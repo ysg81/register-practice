@@ -8,11 +8,11 @@ const mongoose = require("mongoose")
 const config = require("./config/key")
 
 const app = express()
-app.use(bodyParser.urlencoded({ extended: true }))
+// app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.use("/", indexRouter)
-app.use("/user", userRouter)
+app.use("/api", indexRouter)
+app.use("/api/user", userRouter)
 
 //에러 페이지 핸들링
 
