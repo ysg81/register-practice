@@ -38,6 +38,19 @@ export function loginUserThunk(body) {
 	}
 }
 
+export function registerUserThunk(body){
+	return async (dispatch, getState, { history }) => {
+		try {
+			dispatch(pending())
+			const res = await axios.post("/api/user/register", body)
+			dispatch(success(res.data))
+			history.push("/login")
+		} catch (error) {
+			dispatch(fail(error))
+		}
+	}
+}
+
 export default function reducer(state = initialState, action) {
 	if (action.type === PENDING) {
 		return {
