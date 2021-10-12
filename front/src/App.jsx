@@ -1,18 +1,20 @@
+import { ConnectedRouter } from "connected-react-router"
 import React from "react"
-import { BrowserRouter, Switch, Route } from "react-router-dom"
+import { Switch, Route } from "react-router-dom"
+import history from "./history"
 import Homepage from "./pages/Homepage"
 import LoginPage from "./pages/LoginPage"
 import RegisterPage from "./pages/RegisterPage"
 
 function App() {
 	return (
-		<BrowserRouter>
+		<ConnectedRouter history={history}>
 			<Switch>
 				<Route path="/register" exact component={RegisterPage} />
 				<Route path="/login" exact component={LoginPage} />
-				<Route path="/" exact component={Homepage} />
+				<Route path="/" component={Homepage} />
 			</Switch>
-		</BrowserRouter>
+		</ConnectedRouter>
 	)
 }
 
