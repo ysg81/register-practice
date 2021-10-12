@@ -1,9 +1,6 @@
 const express = require("express")
 const bodyParser = require("body-parser")
-const indexRouter = require("./router/index-route")
 const userRouter = require("./router/user-router")
-
-const jwt = require("jsonwebtoken")
 
 const mongoose = require("mongoose")
 const config = require("./config/key")
@@ -16,9 +13,10 @@ app.use(cookieParser())
 
 app.use("/api/user", userRouter)
 
-//에러 페이지 핸들링
-
-//에러 페이지 핸들링
+// 존재하지 않는 페이지에 대한 에러
+app.use((req, res, next) => {
+	return next(new ExpressError("페이지를 찾을 수 없습니다", 404))
+})
 
 app.listen(5000, () => {
 	console.log("Listening on port 5000...")
