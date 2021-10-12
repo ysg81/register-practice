@@ -5,7 +5,6 @@ const ExpressError = require("../models/ExpressError")
 
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const auth = require("../middleware/auth")
 
 router.post("/register", async (req, res, next) => {
 	const { name, email, password } = req.body
@@ -64,19 +63,31 @@ router.post("/login", async (req, res, next) => {
 	}
 	res
 		.cookie("x_auth", token)
-		.json({ success: true, message: "로그인에 성공하였습니다." })
+		.json({ success: true, message: "로그인에 성공하였습니다.", token })
 })
 
-router.get("/auth", auth, async (req, res, next) => {
-	res.json({ success: true, message: "인증된 유저입니다." })
-})
-
-router.get("/logout", auth, async (req, res, next) => {
+router.get("/logout", async (req, res, next) => {
+	const token = req.cookies.x_auth
+	let user
 	try {
-		await User.findOneAndUpdate({ _id: req.user_id }, { token: "" })
+		user = await User.findOne({ token })
 	} catch (error) {
-		return next(new ExpressError("유저 정보 업데이트를 실패하였습니다.", 500))
+		return next(new ExpressError("유저 정보 찾기를 실패하였습니다.", 500))
 	}
+
+	const { email, password } = jwt.verify(token, "mySecretToken")
+	try {
+		await User.findOneAndUpdate(
+			{ email: user.email, password: user.password },
+			{ $set: { token: "" } },
+		)
+	} catch (error) {
+		return next(
+			new ExpressError("유저 토큰 정보 업데이트를 실패하였습니다.", 500),
+		)
+	}
+
+	res.json({ success: true, message: "로그아웃에 성공하였습니다." })
 })
 
 module.exports = router

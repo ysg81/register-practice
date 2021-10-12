@@ -5,7 +5,11 @@ const PENDING = `${prefix}/PENDING`
 const SUCCESS = `${prefix}/SUCCESS`
 const FAIL = `${prefix}/FAIL`
 
-const initialState = { loading: false, data: [], error: null }
+const initialState = {
+	loading: false,
+	data: [],
+	error: null,
+}
 
 export function pending() {
 	return {
@@ -25,11 +29,13 @@ export function fail(error) {
 	}
 }
 
-export function loginUserThunk(body) {
+export function loginUserThunk(body, token) {
 	return async (dispatch, getState, { history }) => {
 		try {
 			dispatch(pending())
-			const res = await axios.post("/api/user/login", body)
+			const res = await axios.post("/api/user/login", body, {
+				Authorization: "Bearer " + token,
+			})
 			dispatch(success(res.data))
 			history.push("/")
 		} catch (error) {
@@ -38,11 +44,24 @@ export function loginUserThunk(body) {
 	}
 }
 
-export function registerUserThunk(body){
+export function registerUserThunk(body) {
 	return async (dispatch, getState, { history }) => {
 		try {
 			dispatch(pending())
 			const res = await axios.post("/api/user/register", body)
+			dispatch(success(res.data))
+			history.push("/login")
+		} catch (error) {
+			dispatch(fail(error))
+		}
+	}
+}
+
+export function logoutUserThunk() {
+	return async (dispatch, getState, { history }) => {
+		try {
+			dispatch(pending())
+			const res = await axios.get("/api/user/logout")
 			dispatch(success(res.data))
 			history.push("/login")
 		} catch (error) {
